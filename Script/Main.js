@@ -5,6 +5,7 @@ let _currentAnswer = "0";
 let _defaultAnswerDisplay = "0";
 let _currentNumberHasDecimal = false;
 let _hasErrorMessageShown = false;
+let _hasEvaluated = false;
 let _keyInputClassName = "keyval";
 let _clickedClassName = "clicked";
 let _clickEvent = "click";
@@ -80,6 +81,7 @@ let _equalButtonHandler = (evt) => {
             _clearAnswerDisplay(ERRORSYNTAX);
             _hasErrorMessageShown = true;
         } else {
+            console.log(_currentAnswer);
             let answerText = answer.toString();
             if (_isNegative(answerText)) {
                 answerText = answerText.substring(1, answerText.length);
@@ -94,6 +96,7 @@ let _equalButtonHandler = (evt) => {
             }
 
             _currentAnswer = _currentAnswer + answerText;
+            _hasEvaluated = true;
             _updateAnswerDisplay();
         }
     }
@@ -112,13 +115,15 @@ let _processOperatorInput = (op) => {
     } else if (!_hasErrorMessageShown) {
         _currentAnswer += op;
         _currentNumberHasDecimal = false;
+        _hasEvaluated = false;
     }
 }
 
 let _processNumericInput = (num) => {
-    if (_isDefaultDisplay() || _hasErrorMessageShown) {
+    if (_isDefaultDisplay() || _hasErrorMessageShown || _hasEvaluated) {
         _currentAnswer = num;
         _hasErrorMessageShown = false;
+        _hasEvaluated = false;
     } else if (_isLastInputOperator() && _getLastInput() == SYMBOLDIVISION && num == '0') {
         return;
     } else {
@@ -134,6 +139,7 @@ let _updateAnswerDisplay = () => {
 let _clearAnswerDisplay = (display= _defaultAnswerDisplay) => {
     _currentAnswer = display;
     _hasErrorMessageShown = false;
+    _hasEvaluated = false;
     _updateAnswerDisplay();
 }
 
