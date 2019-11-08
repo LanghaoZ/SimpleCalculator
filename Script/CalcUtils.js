@@ -3,23 +3,27 @@ const SyntaticErrorMessage = "SYNTATIC ERROR";
 const OverflowErrorMessage = "OVERFLOW";
 
 
-let isValidOperator = (op) => {
-    return (op == '+' || op == '-' || op == '/' || op == '*');
+let Calc_isValidOperator = (op) => {
+    return (op == '+' || op == '-' || op == '÷' || op == 'x');
 }
 
-let computeOrder = (op) => {
-    return isValidOperator(op) ? ((op == '+' || op == '-') ? 1 : 2) : -1;
+let Calc_isDecimalPoint = (char) => {
+    return (char == '.');
+}
+
+let Calc_computeOrder = (op) => {
+    return Calc_isValidOperator(op) ? ((op == '+' || op == '-') ? 1 : 2) : -1;
 }
 
 // op1: last elem in stack, op2: current operator
-let hasHigherOrder = (op1, op2) => {
-    return computeOrder(op1) >= computeOrder(op2);
+let Calc_hasHigherOrder = (op1, op2) => {
+    return Calc_computeOrder(op1) >= Calc_computeOrder(op2);
 }
 
-let nextNumber = (expr, end) => {
+let Calc_getNextNumber = (expr, end) => {
 
     let start = end;
-    while (end < expr.length && !isValidOperator(expr[end])) {
+    while (end < expr.length && !Calc_isValidOperator(expr[end])) {
         end++;
     }
 
@@ -30,7 +34,7 @@ let nextNumber = (expr, end) => {
     };    
 }
 
-let convertToPostfix = (expr) => {
+let Calc_convertToPostfix = (expr) => {
     let n = expr.length;
     let i = 0;
     let postfix = [];
@@ -38,11 +42,11 @@ let convertToPostfix = (expr) => {
 
     while (i < n) {
 
-        if (isValidOperator(expr[i])) {
-            if (operatorStack.length == 0 || computeOrder(expr[i]) > computeOrder(operatorStack[operatorStack.length - 1])) {
+        if (Calc_isValidOperator(expr[i])) {
+            if (operatorStack.length == 0 || Calc_computeOrder(expr[i]) > Calc_computeOrder(operatorStack[operatorStack.length - 1])) {
                 operatorStack.push(expr[i]);
             } else {
-                while (operatorStack.length > 0 && hasHigherOrder(operatorStack[operatorStack.length - 1], expr[i])) {
+                while (operatorStack.length > 0 && Calc_hasHigherOrder(operatorStack[operatorStack.length - 1], expr[i])) {
                     postfix.push(operatorStack.pop());
                 }
 
@@ -51,7 +55,7 @@ let convertToPostfix = (expr) => {
 
             i++;
         } else {
-            let obj = nextNumber(expr, i);
+            let obj = Calc_getNextNumber(expr, i);
             if (obj.value == Infinity || obj.value == -Infinity) {
                 return OverflowErrorMessage;
             }
@@ -68,7 +72,7 @@ let convertToPostfix = (expr) => {
     return postfix;
 }
 
-let computePostfix = (operands) => {
+let Calc_computePostfix = (operands) => {
 
     let stack = [];
     let n = operands.length;
@@ -76,7 +80,7 @@ let computePostfix = (operands) => {
 
     while (i < n) {
 
-        if (isValidOperator(operands[i])) {
+        if (Calc_isValidOperator(operands[i])) {
             if (stack.length < 2) {
                 return SyntaticErrorMessage;
             }
@@ -91,10 +95,10 @@ let computePostfix = (operands) => {
                 case '-':
                     stack.push(operand2 - operand1);
                     break;
-                case '*':
+                case 'x':
                     stack.push(operand1 * operand2);
                     break;
-                case '/':
+                case '÷':
                     stack.push(operand2 / operand1);
                     break;
             }
@@ -106,8 +110,7 @@ let computePostfix = (operands) => {
     }
 
     if (stack.length != 1) {
-        console.log("Bad 3");
-        return;
+        return SyntaticErrorMessage;
     }
 
     return stack[0];

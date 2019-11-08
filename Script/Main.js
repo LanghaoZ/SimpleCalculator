@@ -1,10 +1,10 @@
-
 let _answerElement = Dom_getElementById("answer");
 let _equalButtonElement = Dom_getElementById("eqbtn");
 let _clearButtonElement = Dom_getElementById("acbtn");
 let _currentAnswer = "0";
 let _defaultAnswerDisplay = "0";
 let _currentNumberHasDecimal = false;
+let _hasEvaluated = false;
 let _keyInputClassName = "keyval";
 let _clickedClassName = "clicked";
 let _clickEvent = "click";
@@ -16,8 +16,6 @@ let _multiplicationSymbol = "x";
 let _divisionSymbol = "÷";
 let _equalSymbol = "=";
 let _decimalPointSymbol = ".";
-
-// init();
 
 let init = () => {
 
@@ -50,7 +48,14 @@ let keyInputHandler = (evt) => {
     let key = Dom_getInnerText(evt.currentTarget);
     if (!key) return;
 
-    _currentAnswer += key;
+    if (Calc_isDecimalPoint(key)) {
+        processDecimalPointInput();
+    } else if (Calc_isValidOperator(key)) {
+        processOperatorInput(key);
+    } else {
+        processNumericInput(key);
+    }
+
     updateAnswerDisplay();
 }
 
@@ -70,7 +75,44 @@ let clearButtonHandler = (evt) => {
 }
 
 let equalButtonHandler = (evt) => {
+    if (!isLastInputOperator() && !isLastInputDecimalPoint()) {
+        let postfix = Calc_convertToPostfix(_currentAnswer);
+        let answer = Calc_computePostfix(postfix);
+        if (typeof(answer) == "string") {
+            clearAnswerDisplay(answer);
+        } else {
+            _currentAnswer = answer.toString();
+            _hasEvaluated = true;
+            updateAnswerDisplay();
+        }
+    }
+}
 
+let processDecimalPointInput = () => {
+    if (!_currentNumberHasDecimal && !isDefaultDisplay() && !isLastInputOperator()) {
+        _currentAnswer += _decimalPointSymbol;
+        _currentNumberHasDecimal = true;
+    }
+}
+
+let processOperatorInput = (op) => {
+    if (isLastInputOperator()) {
+        _currentAnswer[_currentAnswer.length - 1] = op;
+    } else {
+        _currentAnswer += op;
+        _currentNumberHasDecimal = false;
+    }
+}
+
+let processNumericInput = (num) => {
+    if (isDefaultDisplay() || _hasEvaluated) {
+        _currentAnswer = num;
+        _hasEvaluated = false;
+    } else if (isLastInputOperator() && _currentAnswer[_currentAnswer.length - 1] == _divisionSymbol && num == '0') {
+        return;
+    } else {
+        _currentAnswer += num;
+    }
 }
 
 let updateAnswerDisplay = () => {
@@ -78,9 +120,22 @@ let updateAnswerDisplay = () => {
     Dom_setInnerText(_answerElement, _currentAnswer);
 }
 
-let clearAnswerDisplay = () => {
-    _currentAnswer = _defaultAnswerDisplay;
+let clearAnswerDisplay = (display= _defaultAnswerDisplay) => {
+    _currentAnswer = display;
+    _hasEvaluated = false;
     updateAnswerDisplay();
+}
+
+let isLastInputOperator = () => {
+    return (_currentAnswer.length > 0 && 
+        !isDefaultDisplay() && 
+        Calc_isValidOperator(_currentAnswer[_currentAnswer.length - 1]))
+}
+
+let isLastInputDecimalPoint = () => {
+    return (_currentAnswer.length > 0 && 
+        !isDefaultDisplay() && 
+        Calc_isDecimalPoint(_currentAnswer[_currentAnswer.length - 1]))
 }
 
 let isDefaultDisplay = () => {
@@ -90,3 +145,5 @@ let isDefaultDisplay = () => {
 let calculateResults = () => {
 
 }
+
+init();
