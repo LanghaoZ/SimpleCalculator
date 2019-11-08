@@ -8,13 +8,8 @@ let Dom_getElementsByClassName = (elem, className) => {
     }
 }
 
-let Dom_getElementById = (elem, id) => {
-    let element = elem || document;
-    if (element.getElementById) {
-        return element.getElementById(id);
-    } else {
-        return null;
-    }
+let Dom_getElementById = (id) => {
+    return document.getElementById(id);
 }
 
 let Dom_addEventListener = (elem, event, handler) => {

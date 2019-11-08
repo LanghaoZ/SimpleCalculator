@@ -41,7 +41,8 @@
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 24px;
-    padding: 8px 0px 8px 0px;
+    border-radius: 8px;
+    padding: 8px 0px 3px 0px;
 }
 
 #displayer {
@@ -51,6 +52,10 @@
     margin: auto;
     padding: 15px 20px 0px 15px;
     box-sizing: border-box;
+}
+
+.clicked {
+    border: 1px solid #3c4245;
 }
 
 #displayer:hover {
@@ -102,9 +107,10 @@
 
 .keyval {
     font-size: 24px;
-    padding: 24px 0px 24px 0px;
+    padding: 24px 0px 22px 0px;
     line-height: 25px;
     margin: auto;
+    border-radius: 8px;
 }
 
 .display-border {
