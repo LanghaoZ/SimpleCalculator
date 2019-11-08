@@ -80,16 +80,24 @@ let equalButtonHandler = (evt) => {
         let answer = Calc_computePostfix(postfix);
         if (typeof(answer) == "string") {
             clearAnswerDisplay(answer);
+        } else if (!answer) {
+            clearAnswerDisplay(SyntaticErrorMessage);
         } else {
+            // let answerText = answer.toString();
+            // if (answerText.length > 9) {
+            //     answerText = formatDigits(answerText);
+            // }
+            // _currentAnswer = answerText;
             _currentAnswer = answer.toString();
-            _hasEvaluated = true;
             updateAnswerDisplay();
         }
+
+        _hasEvaluated = true;
     }
 }
 
 let processDecimalPointInput = () => {
-    if (!_currentNumberHasDecimal && !isDefaultDisplay() && !isLastInputOperator()) {
+    if (!_currentNumberHasDecimal && !isLastInputOperator()) {
         _currentAnswer += _decimalPointSymbol;
         _currentNumberHasDecimal = true;
     }
@@ -97,8 +105,8 @@ let processDecimalPointInput = () => {
 
 let processOperatorInput = (op) => {
     if (isLastInputOperator()) {
-        _currentAnswer[_currentAnswer.length - 1] = op;
-    } else {
+        setLastInput(op);
+    } else if (!_hasEvaluated) {
         _currentAnswer += op;
         _currentNumberHasDecimal = false;
     }
@@ -108,7 +116,7 @@ let processNumericInput = (num) => {
     if (isDefaultDisplay() || _hasEvaluated) {
         _currentAnswer = num;
         _hasEvaluated = false;
-    } else if (isLastInputOperator() && _currentAnswer[_currentAnswer.length - 1] == _divisionSymbol && num == '0') {
+    } else if (isLastInputOperator() && getLastInput() == _divisionSymbol && num == '0') {
         return;
     } else {
         _currentAnswer += num;
@@ -129,21 +137,60 @@ let clearAnswerDisplay = (display= _defaultAnswerDisplay) => {
 let isLastInputOperator = () => {
     return (_currentAnswer.length > 0 && 
         !isDefaultDisplay() && 
-        Calc_isValidOperator(_currentAnswer[_currentAnswer.length - 1]))
+        Calc_isValidOperator(getLastInput()))
 }
 
 let isLastInputDecimalPoint = () => {
     return (_currentAnswer.length > 0 && 
         !isDefaultDisplay() && 
-        Calc_isDecimalPoint(_currentAnswer[_currentAnswer.length - 1]))
+        Calc_isDecimalPoint(getLastInput()))
 }
 
 let isDefaultDisplay = () => {
     return (_currentAnswer == _defaultAnswerDisplay)
 }
 
-let calculateResults = () => {
+let setLastInput = (input) => {
+    _currentAnswer = _currentAnswer.substring(0, _currentAnswer.length - 1) + input;
+}
 
+let getLastInput = () => {
+    return _currentAnswer.length > 0 ? _currentAnswer[_currentAnswer.length - 1] : "";
+}
+
+let fixToNineDigits = (input) => {
+    let decimalPointIndex = input.indexOf(_decimalPointSymbol);
+    let answer = input;
+    if (decimalPointIndex == -1) {
+        answer = input[0] + _decimalPointSymbol + input.substring(1, 10);
+        let powers = input.length - 1;
+        answer = parseFloat(answer).toFixed(8).toString();
+        if (answer.indexOf(_decimalPointSymbol) == 2) {
+            powers += 1;
+            console.log(powers);
+            answer = answer[0] + _decimalPointSymbol + answer[1] + answer(3, answer.length);
+        }
+
+        answer = answer + "x10^" + powers.toString();
+    } else if (input.length != 10) {
+
+    }
+
+    return answer;
+}
+
+let formatIntegers = (input) => {
+    if (input.length == 9) return input;
+    let powers = input.length - 1;
+    let answer = input[0] + _decimalPointSymbol + input.substring(1, 10);
+    answer = parseFloat(answer).toFixed(8).toString();
+    if (answer.indexOf(_decimalPointSymbol) == 2) {
+        powers += 1;
+        console.log(powers);
+        answer = answer[0] + _decimalPointSymbol + answer[1] + answer(3, answer.length);
+    }
+
+    return answer + "x10^" + powers.toString();
 }
 
 init();
