@@ -159,24 +159,18 @@ let getLastInput = () => {
 }
 
 let fixToNineDigits = (input) => {
-    let decimalPointIndex = input.indexOf(_decimalPointSymbol);
-    let answer = input;
-    if (decimalPointIndex == -1) {
-        answer = input[0] + _decimalPointSymbol + input.substring(1, 10);
-        let powers = input.length - 1;
-        answer = parseFloat(answer).toFixed(8).toString();
-        if (answer.indexOf(_decimalPointSymbol) == 2) {
-            powers += 1;
-            console.log(powers);
-            answer = answer[0] + _decimalPointSymbol + answer[1] + answer(3, answer.length);
+    let index = input.indexOf(_decimalPointSymbol);
+    let value = input;
+
+    if (index == -1 || index >= 9) {
+        if (index == 9) {
+            value = Math.round(parseFloat(value)).toString();
         }
 
-        answer = answer + "x10^" + powers.toString();
-    } else if (input.length != 10) {
-
+        return formatIntegers(value);
     }
 
-    return answer;
+    return formatDecimals(value, index);
 }
 
 let formatIntegers = (input) => {
@@ -186,11 +180,23 @@ let formatIntegers = (input) => {
     answer = parseFloat(answer).toFixed(8).toString();
     if (answer.indexOf(_decimalPointSymbol) == 2) {
         powers += 1;
-        console.log(powers);
-        answer = answer[0] + _decimalPointSymbol + answer[1] + answer(3, answer.length);
+        answer = answer[0] + _decimalPointSymbol + answer[1] + answer.substring(3, answer.length);
     }
 
     return answer + "x10^" + powers.toString();
+}
+
+let formatDecimals = (input, index) => {
+    let value = parseFloat(input).toFixed(9 - index);
+    if (value - "0" == 0) {
+        return "0";
+    }
+
+    if (value.length != 10) {
+        value = parseFloat(value).toFixed(9 - index - 1);
+    }
+
+    return value;
 }
 
 init();
