@@ -2,10 +2,19 @@
 let Dom_getElementsByClassName = (elem, className) => {
 
     let element = elem || document;
-    if (element.Dom_getElementsByClassName) {
-        return element.Dom_getElementsByClassName(className);
+    if (element.getElementsByClassName) {
+        return element.getElementsByClassName(className);
     } else {
         return [];
+    }
+}
+
+let Dom_getElementById = (elem, id) => {
+    let element = elem || document;
+    if (element.getElementById) {
+        return element.getElementById(id);
+    } else {
+        return null;
     }
 }
 
