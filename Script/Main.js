@@ -11,77 +11,77 @@ let _clickEvent = "click";
 let _mouseDownEvent = "mousedown";
 let _mouseUpEvent = "mouseup";
 
-let init = () => {
+let _init = () => {
 
     if (!_answerElement || !_equalButtonElement || !_clearButtonElement) {
         return;
     }
 
-    bindEvents();
+    _bindEvents();
 }
 
-let bindEvents = () => {
+let _bindEvents = () => {
     let keys = Dom_getElementsByClassName(document, _keyInputClassName);
     if (keys.length == 0) return;
 
     for (let i = 0; i < keys.length; i++) {
         if (Dom_getInnerText(keys[i]) != SYMBOLEQUAL) {
-            Dom_addEventListener(keys[i], _clickEvent, keyInputHandler);
+            Dom_addEventListener(keys[i], _clickEvent, _keyInputHandler);
         }
 
-        Dom_addEventListener(keys[i], _mouseDownEvent, keyMouseDownHandler);
+        Dom_addEventListener(keys[i], _mouseDownEvent, _keyMouseDownHandler);
     }
 
-    Dom_addEventListener(_equalButtonElement, _clickEvent, equalButtonHandler);
-    Dom_addEventListener(_equalButtonElement, _mouseDownEvent, keyMouseDownHandler);
-    Dom_addEventListener(_clearButtonElement, _clickEvent, clearButtonHandler);
-    Dom_addEventListener(_clearButtonElement, _mouseDownEvent, keyMouseDownHandler);
+    Dom_addEventListener(_equalButtonElement, _clickEvent, _equalButtonHandler);
+    Dom_addEventListener(_equalButtonElement, _mouseDownEvent, _keyMouseDownHandler);
+    Dom_addEventListener(_clearButtonElement, _clickEvent, _clearButtonHandler);
+    Dom_addEventListener(_clearButtonElement, _mouseDownEvent, _keyMouseDownHandler);
 }
 
-let keyInputHandler = (evt) => {
+let _keyInputHandler = (evt) => {
     let key = Dom_getInnerText(evt.currentTarget);
     if (!key) return;
 
     if (Calc_isDecimalPoint(key)) {
-        processDecimalPointInput();
+        _processDecimalPointInput();
     } else if (Calc_isValidOperator(key)) {
-        processOperatorInput(key);
+        _processOperatorInput(key);
     } else {
-        processNumericInput(key);
+        _processNumericInput(key);
     }
 
-    updateAnswerDisplay();
+    _updateAnswerDisplay();
 }
 
-let keyMouseDownHandler = (evt) => {
+let _keyMouseDownHandler = (evt) => {
     Dom_addClass(evt.currentTarget, _clickedClassName);
-    Dom_addEventListener(evt.currentTarget, _mouseUpEvent, keyMouseUpHandler);
+    Dom_addEventListener(evt.currentTarget, _mouseUpEvent, _keyMouseUpHandler);
 }
 
-let keyMouseUpHandler = (evt) => {
+let _keyMouseUpHandler = (evt) => {
     Dom_removeClass(evt.currentTarget, _clickedClassName);
-    Dom_removeEventListener(evt.currentTarget, keyMouseUpHandler);
+    Dom_removeEventListener(evt.currentTarget, _keyMouseUpHandler);
 }
 
-let clearButtonHandler = (evt) => {
-    clearAnswerDisplay();
+let _clearButtonHandler = (evt) => {
+    _clearAnswerDisplay();
     _currentNumberHasDecimal = false;
 }
 
-let equalButtonHandler = (evt) => {
-    if (!isLastInputOperator() && !isLastInputDecimalPoint()) {
+let _equalButtonHandler = (evt) => {
+    if (!_isLastInputOperator() && !_isLastInputDecimalPoint()) {
         let postfix = Calc_convertToPostfix(_currentAnswer);
         let answer = Calc_computePostfix(postfix);
 
         if (typeof(answer) == "string") {
-            clearAnswerDisplay(answer);
+            _clearAnswerDisplay(answer);
             _hasErrorMessageShown = true;
         } else if (!answer) {
-            clearAnswerDisplay(ERRORSYNTAX);
+            _clearAnswerDisplay(ERRORSYNTAX);
             _hasErrorMessageShown = true;
         } else {
             let answerText = answer.toString();
-            if (isNegative(answerText)) {
+            if (_isNegative(answerText)) {
                 answerText = answerText.substring(1, answerText.length);
                 _currentAnswer = SYMBOLSUBTRACTION;
             } else {
@@ -90,82 +90,82 @@ let equalButtonHandler = (evt) => {
 
             if (answerText.length > 9 &&
                 answerText.indexOf(SYMBOLDECIMALPOINT) != 9) {
-                    answerText = fixToNineDigits(answerText);
+                    answerText = _fixToNineDigits(answerText);
             }
 
             _currentAnswer = _currentAnswer + answerText;
-            updateAnswerDisplay();
+            _updateAnswerDisplay();
         }
     }
 }
 
-let processDecimalPointInput = () => {
-    if (!_currentNumberHasDecimal && !isLastInputOperator()) {
+let _processDecimalPointInput = () => {
+    if (!_currentNumberHasDecimal && !_isLastInputOperator()) {
         _currentAnswer += SYMBOLDECIMALPOINT;
         _currentNumberHasDecimal = true;
     }
 }
 
-let processOperatorInput = (op) => {
-    if (isLastInputOperator()) {
-        setLastInput(op);
+let _processOperatorInput = (op) => {
+    if (_isLastInputOperator()) {
+        _setLastInput(op);
     } else if (!_hasErrorMessageShown) {
         _currentAnswer += op;
         _currentNumberHasDecimal = false;
     }
 }
 
-let processNumericInput = (num) => {
-    if (isDefaultDisplay() || _hasErrorMessageShown) {
+let _processNumericInput = (num) => {
+    if (_isDefaultDisplay() || _hasErrorMessageShown) {
         _currentAnswer = num;
         _hasErrorMessageShown = false;
-    } else if (isLastInputOperator() && getLastInput() == SYMBOLDIVISION && num == '0') {
+    } else if (_isLastInputOperator() && _getLastInput() == SYMBOLDIVISION && num == '0') {
         return;
     } else {
         _currentAnswer += num;
     }
 }
 
-let updateAnswerDisplay = () => {
+let _updateAnswerDisplay = () => {
     if (!_currentAnswer) return;
     Dom_setInnerText(_answerElement, _currentAnswer);
 }
 
-let clearAnswerDisplay = (display= _defaultAnswerDisplay) => {
+let _clearAnswerDisplay = (display= _defaultAnswerDisplay) => {
     _currentAnswer = display;
     _hasErrorMessageShown = false;
-    updateAnswerDisplay();
+    _updateAnswerDisplay();
 }
 
-let isLastInputOperator = () => {
-    return (_currentAnswer.length > 0 && 
-        !isDefaultDisplay() && 
-        Calc_isValidOperator(getLastInput()))
-}
-
-let isLastInputDecimalPoint = () => {
-    return (_currentAnswer.length > 0 && 
-        !isDefaultDisplay() && 
-        Calc_isDecimalPoint(getLastInput()))
-}
-
-let isDefaultDisplay = () => {
-    return (_currentAnswer == _defaultAnswerDisplay)
-}
-
-let isNegative = (input) => {
-    return (input.length > 0 && input[0] == SYMBOLSUBTRACTION);
-}
-
-let setLastInput = (input) => {
+let _setLastInput = (input) => {
     _currentAnswer = _currentAnswer.substring(0, _currentAnswer.length - 1) + input;
 }
 
-let getLastInput = () => {
+let _getLastInput = () => {
     return _currentAnswer.length > 0 ? _currentAnswer[_currentAnswer.length - 1] : "";
 }
 
-let fixToNineDigits = (input) => {
+let _isLastInputOperator = () => {
+    return (_currentAnswer.length > 0 && 
+        !_isDefaultDisplay() && 
+        Calc_isValidOperator(_getLastInput()))
+}
+
+let _isLastInputDecimalPoint = () => {
+    return (_currentAnswer.length > 0 && 
+        !_isDefaultDisplay() && 
+        Calc_isDecimalPoint(_getLastInput()))
+}
+
+let _isDefaultDisplay = () => {
+    return (_currentAnswer == _defaultAnswerDisplay)
+}
+
+let _isNegative = (input) => {
+    return (input.length > 0 && input[0] == SYMBOLSUBTRACTION);
+}
+
+let _fixToNineDigits = (input) => {
     let index = input.indexOf(SYMBOLDECIMALPOINT);
     let value = input;
 
@@ -174,13 +174,13 @@ let fixToNineDigits = (input) => {
             value = Math.round(parseFloat(value)).toString();
         }
 
-        return formatIntegers(value);
+        return _formatIntegers(value);
     }
 
-    return formatDecimals(value, index);
+    return _formatDecimals(value, index);
 }
 
-let formatIntegers = (input) => {
+let _formatIntegers = (input) => {
     if (input.length == 9) return input;
     let powers = input.length - 1;
     let answer = input[0] + SYMBOLDECIMALPOINT + input.substring(1, 10);
@@ -193,7 +193,7 @@ let formatIntegers = (input) => {
     return answer + "x10^" + powers.toString();
 }
 
-let formatDecimals = (input, index) => {
+let _formatDecimals = (input, index) => {
     let value = parseFloat(input).toFixed(9 - index);
     if (value - "0" == 0) {
         return "0";
@@ -206,4 +206,4 @@ let formatDecimals = (input, index) => {
     return value;
 }
 
-init();
+_init();

@@ -1,4 +1,3 @@
-
 let Dom_getElementsByClassName = (elem, className) => {
     let element = elem || document;
     if (element.getElementsByClassName) {
