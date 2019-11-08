@@ -22,3 +22,7 @@ This project contains a total of 6 files:
 * **SimpleCalc.css**: This CSS file contains the styling of the calculator.
 * **README.md**: This file, which contains the documentation of the project.
 
+## Notice
+* The variable and function names are self-descriptive. Hence, this project includes no comment.
+* The high level idea of the algorithm for postfix notation convertion and evaluation comes from UCLA's Introductory Data Structure Course Com Sci 32.
+* I referenced the IOS 13 built-in calculator and Google's web calculator when comming up with the logic and design of this project. 
