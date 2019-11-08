@@ -1,6 +1,5 @@
 
 let Dom_getElementsByClassName = (elem, className) => {
-
     let element = elem || document;
     if (element.getElementsByClassName) {
         return element.getElementsByClassName(className);
@@ -16,6 +15,18 @@ let Dom_getElementById = (elem, id) => {
     } else {
         return null;
     }
+}
+
+let Dom_addEventListener = (elem, event, handler) => {
+    if (!handler) return;
+
+    let element = elem || document;
+    element.addEventListener(event, handler);
+}
+
+let Dom_removeEventListener = (elem, event, handler) => {
+    if (!handler || !elem) return;
+    elem.removeEventListener(event, handler);
 }
 
 let Dom_getClassName = (elem) => {
