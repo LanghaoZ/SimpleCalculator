@@ -86,9 +86,8 @@ let equalButtonHandler = (evt) => {
             clearAnswerDisplay(SyntaticErrorMessage);
             _hasErrorMessageShown = true;
         } else {
-
             let answerText = answer.toString();
-            if (answerText.length > 0 && answerText[0] == _subtractionSymbol) {
+            if (isNegative(answerText)) {
                 answerText = answerText.substring(1, answerText.length);
                 _currentAnswer = _subtractionSymbol;
             } else {
@@ -158,6 +157,10 @@ let isLastInputDecimalPoint = () => {
 
 let isDefaultDisplay = () => {
     return (_currentAnswer == _defaultAnswerDisplay)
+}
+
+let isNegative = (input) => {
+    return (input.length > 0 && input[0] == _subtractionSymbol);
 }
 
 let setLastInput = (input) => {

@@ -43,7 +43,12 @@ let Calc_convertToPostfix = (expr) => {
     while (i < n) {
 
         if (Calc_isValidOperator(expr[i])) {
-            if (operatorStack.length == 0 || Calc_computeOrder(expr[i]) > Calc_computeOrder(operatorStack[operatorStack.length - 1])) {
+            if (expr[i] == "-" && i == 0) {
+                let obj = Calc_getNextNumber(expr, 1);
+                postfix.push(-obj.value);
+                i = obj.index;
+                continue;
+            } else if (operatorStack.length == 0 || Calc_computeOrder(expr[i]) > Calc_computeOrder(operatorStack[operatorStack.length - 1])) {
                 operatorStack.push(expr[i]);
             } else {
                 while (operatorStack.length > 0 && Calc_hasHigherOrder(operatorStack[operatorStack.length - 1], expr[i])) {
