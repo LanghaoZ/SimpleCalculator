@@ -1,21 +1,24 @@
-
-const SyntaticErrorMessage = "SYNTATIC ERROR";
-const OverflowErrorMessage = "OVERFLOW";
-
+const ERRORSYNTAX = "SYNTAX ERROR";
+const ERROROVERFLOW = "OVERFLOW";
+let SYMBOLADDITION = "+";
+let SYMBOLSUBTRACTION = "-";
+let SYMBOLMULTIPLICATION = "x";
+let SYMBOLDIVISION = "÷";
+const SYMBOLEQUAL = "=";
+const SYMBOLDECIMALPOINT = ".";
 
 let Calc_isValidOperator = (op) => {
-    return (op == '+' || op == '-' || op == '÷' || op == 'x');
+    return (op == SYMBOLADDITION || op == SYMBOLSUBTRACTION || op == SYMBOLDIVISION || op == SYMBOLMULTIPLICATION);
 }
 
 let Calc_isDecimalPoint = (char) => {
-    return (char == '.');
+    return (char == SYMBOLDECIMALPOINT);
 }
 
 let Calc_computeOrder = (op) => {
-    return Calc_isValidOperator(op) ? ((op == '+' || op == '-') ? 1 : 2) : -1;
+    return Calc_isValidOperator(op) ? ((op == SYMBOLADDITION || op == SYMBOLSUBTRACTION) ? 1 : 2) : -1;
 }
 
-// op1: last elem in stack, op2: current operator
 let Calc_hasHigherOrder = (op1, op2) => {
     return Calc_computeOrder(op1) >= Calc_computeOrder(op2);
 }
@@ -43,12 +46,12 @@ let Calc_convertToPostfix = (expr) => {
     while (i < n) {
 
         if (Calc_isValidOperator(expr[i])) {
-            if (expr[i] == "-" && i == 0) {
+            if (expr[i] == SYMBOLSUBTRACTION && i == 0) {
                 let obj = Calc_getNextNumber(expr, 1);
                 postfix.push(-obj.value);
                 i = obj.index;
                 continue;
-            } else if (operatorStack.length == 0 || Calc_computeOrder(expr[i]) > Calc_computeOrder(operatorStack[operatorStack.length - 1])) {
+            } else if (operatorStack.length == 0 || !(Calc_hasHigherOrder(operatorStack[operatorStack.length - 1], expr[i]))) {
                 operatorStack.push(expr[i]);
             } else {
                 while (operatorStack.length > 0 && Calc_hasHigherOrder(operatorStack[operatorStack.length - 1], expr[i])) {
@@ -62,7 +65,7 @@ let Calc_convertToPostfix = (expr) => {
         } else {
             let obj = Calc_getNextNumber(expr, i);
             if (obj.value == Infinity || obj.value == -Infinity) {
-                return OverflowErrorMessage;
+                return ERROROVERFLOW;
             }
 
             postfix.push(obj.value);
@@ -87,23 +90,23 @@ let Calc_computePostfix = (operands) => {
 
         if (Calc_isValidOperator(operands[i])) {
             if (stack.length < 2) {
-                return SyntaticErrorMessage;
+                return ERRORSYNTAX;
             }
 
             let operand1 = stack.pop();
             let operand2 = stack.pop();
 
             switch(operands[i]) {
-                case '+':
+                case SYMBOLADDITION:
                     stack.push(operand1 + operand2);
                     break;
-                case '-':
+                case SYMBOLSUBTRACTION:
                     stack.push(operand2 - operand1);
                     break;
-                case 'x':
+                case SYMBOLMULTIPLICATION:
                     stack.push(operand1 * operand2);
                     break;
-                case '÷':
+                case SYMBOLDIVISION:
                     stack.push(operand2 / operand1);
                     break;
             }
@@ -115,7 +118,7 @@ let Calc_computePostfix = (operands) => {
     }
 
     if (stack.length != 1) {
-        return SyntaticErrorMessage;
+        return ERRORSYNTAX;
     }
 
     return stack[0];

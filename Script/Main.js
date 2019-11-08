@@ -10,12 +10,6 @@ let _clickedClassName = "clicked";
 let _clickEvent = "click";
 let _mouseDownEvent = "mousedown";
 let _mouseUpEvent = "mouseup";
-let _additionSymbol = "+";
-let _subtractionSymbol = "-";
-let _multiplicationSymbol = "x";
-let _divisionSymbol = "÷";
-let _equalSymbol = "=";
-let _decimalPointSymbol = ".";
 
 let init = () => {
 
@@ -31,7 +25,7 @@ let bindEvents = () => {
     if (keys.length == 0) return;
 
     for (let i = 0; i < keys.length; i++) {
-        if (Dom_getInnerText(keys[i]) != _equalSymbol) {
+        if (Dom_getInnerText(keys[i]) != SYMBOLEQUAL) {
             Dom_addEventListener(keys[i], _clickEvent, keyInputHandler);
         }
 
@@ -83,19 +77,19 @@ let equalButtonHandler = (evt) => {
             clearAnswerDisplay(answer);
             _hasErrorMessageShown = true;
         } else if (!answer) {
-            clearAnswerDisplay(SyntaticErrorMessage);
+            clearAnswerDisplay(ERRORSYNTAX);
             _hasErrorMessageShown = true;
         } else {
             let answerText = answer.toString();
             if (isNegative(answerText)) {
                 answerText = answerText.substring(1, answerText.length);
-                _currentAnswer = _subtractionSymbol;
+                _currentAnswer = SYMBOLSUBTRACTION;
             } else {
                 _currentAnswer = "";
             }
 
             if (answerText.length > 9 &&
-                answerText.indexOf(_decimalPointSymbol) != 9) {
+                answerText.indexOf(SYMBOLDECIMALPOINT) != 9) {
                     answerText = fixToNineDigits(answerText);
             }
 
@@ -107,7 +101,7 @@ let equalButtonHandler = (evt) => {
 
 let processDecimalPointInput = () => {
     if (!_currentNumberHasDecimal && !isLastInputOperator()) {
-        _currentAnswer += _decimalPointSymbol;
+        _currentAnswer += SYMBOLDECIMALPOINT;
         _currentNumberHasDecimal = true;
     }
 }
@@ -125,7 +119,7 @@ let processNumericInput = (num) => {
     if (isDefaultDisplay() || _hasErrorMessageShown) {
         _currentAnswer = num;
         _hasErrorMessageShown = false;
-    } else if (isLastInputOperator() && getLastInput() == _divisionSymbol && num == '0') {
+    } else if (isLastInputOperator() && getLastInput() == SYMBOLDIVISION && num == '0') {
         return;
     } else {
         _currentAnswer += num;
@@ -160,7 +154,7 @@ let isDefaultDisplay = () => {
 }
 
 let isNegative = (input) => {
-    return (input.length > 0 && input[0] == _subtractionSymbol);
+    return (input.length > 0 && input[0] == SYMBOLSUBTRACTION);
 }
 
 let setLastInput = (input) => {
@@ -172,7 +166,7 @@ let getLastInput = () => {
 }
 
 let fixToNineDigits = (input) => {
-    let index = input.indexOf(_decimalPointSymbol);
+    let index = input.indexOf(SYMBOLDECIMALPOINT);
     let value = input;
 
     if (index == -1 || index >= 9) {
@@ -189,11 +183,11 @@ let fixToNineDigits = (input) => {
 let formatIntegers = (input) => {
     if (input.length == 9) return input;
     let powers = input.length - 1;
-    let answer = input[0] + _decimalPointSymbol + input.substring(1, 10);
+    let answer = input[0] + SYMBOLDECIMALPOINT + input.substring(1, 10);
     answer = parseFloat(answer).toFixed(8).toString();
-    if (answer.indexOf(_decimalPointSymbol) == 2) {
+    if (answer.indexOf(SYMBOLDECIMALPOINT) == 2) {
         powers += 1;
-        answer = answer[0] + _decimalPointSymbol + answer[1] + answer.substring(3, answer.length);
+        answer = answer[0] + SYMBOLDECIMALPOINT + answer[1] + answer.substring(3, answer.length);
     }
 
     return answer + "x10^" + powers.toString();
