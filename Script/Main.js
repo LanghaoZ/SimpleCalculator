@@ -81,7 +81,6 @@ let _equalButtonHandler = (evt) => {
             _clearAnswerDisplay(ERRORSYNTAX);
             _hasErrorMessageShown = true;
         } else {
-            console.log(_currentAnswer);
             let answerText = answer.toString();
             if (_isNegative(answerText)) {
                 answerText = answerText.substring(1, answerText.length);
