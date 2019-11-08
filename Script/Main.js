@@ -4,7 +4,7 @@ let _clearButtonElement = Dom_getElementById("acbtn");
 let _currentAnswer = "0";
 let _defaultAnswerDisplay = "0";
 let _currentNumberHasDecimal = false;
-let _hasEvaluated = false;
+let _hasErrorMessageShown = false;
 let _keyInputClassName = "keyval";
 let _clickedClassName = "clicked";
 let _clickEvent = "click";
@@ -78,21 +78,31 @@ let equalButtonHandler = (evt) => {
     if (!isLastInputOperator() && !isLastInputDecimalPoint()) {
         let postfix = Calc_convertToPostfix(_currentAnswer);
         let answer = Calc_computePostfix(postfix);
+
         if (typeof(answer) == "string") {
             clearAnswerDisplay(answer);
+            _hasErrorMessageShown = true;
         } else if (!answer) {
             clearAnswerDisplay(SyntaticErrorMessage);
+            _hasErrorMessageShown = true;
         } else {
-            // let answerText = answer.toString();
-            // if (answerText.length > 9) {
-            //     answerText = formatDigits(answerText);
-            // }
-            // _currentAnswer = answerText;
-            _currentAnswer = answer.toString();
+
+            let answerText = answer.toString();
+            if (answerText.length > 0 && answerText[0] == _subtractionSymbol) {
+                answerText = answerText.substring(1, answerText.length);
+                _currentAnswer = _subtractionSymbol;
+            } else {
+                _currentAnswer = "";
+            }
+
+            if (answerText.length > 9 &&
+                answerText.indexOf(_decimalPointSymbol) != 9) {
+                    answerText = fixToNineDigits(answerText);
+            }
+
+            _currentAnswer = _currentAnswer + answerText;
             updateAnswerDisplay();
         }
-
-        _hasEvaluated = true;
     }
 }
 
@@ -106,16 +116,16 @@ let processDecimalPointInput = () => {
 let processOperatorInput = (op) => {
     if (isLastInputOperator()) {
         setLastInput(op);
-    } else if (!_hasEvaluated) {
+    } else if (!_hasErrorMessageShown) {
         _currentAnswer += op;
         _currentNumberHasDecimal = false;
     }
 }
 
 let processNumericInput = (num) => {
-    if (isDefaultDisplay() || _hasEvaluated) {
+    if (isDefaultDisplay() || _hasErrorMessageShown) {
         _currentAnswer = num;
-        _hasEvaluated = false;
+        _hasErrorMessageShown = false;
     } else if (isLastInputOperator() && getLastInput() == _divisionSymbol && num == '0') {
         return;
     } else {
@@ -130,7 +140,7 @@ let updateAnswerDisplay = () => {
 
 let clearAnswerDisplay = (display= _defaultAnswerDisplay) => {
     _currentAnswer = display;
-    _hasEvaluated = false;
+    _hasErrorMessageShown = false;
     updateAnswerDisplay();
 }
 
