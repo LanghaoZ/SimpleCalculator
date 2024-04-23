@@ -26,6 +26,20 @@ This project contains a total of 6 files:
 * **SimpleCalc.css**: This CSS file contains the styling of the calculator.
 * **README.md**: This file, which contains the documentation of the project.
 
+## Docker
+This project can be packed into a web server (powered by nginx) with following command:
+
+```
+docker compose up
+```
+
+Alternatively, if you wish to build the image and start from there, this can be done via following command:
+
+```
+docker build -t <tag> .
+docker run -d -p <host port>:<container port> --name <container name> <docker image tag>
+```
+
 ## Notice
 * The variable and function names are self-descriptive. Hence, this project includes no comment.
 * The high level idea of the algorithm for postfix notation convertion and evaluation comes from UCLA's Introductory Data Structure Course Com Sci 32.

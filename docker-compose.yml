@@ -1,0 +1,8 @@
+services:
+  web-calculator:
+    image: langhaoz/web-calculator:preview
+    container_name: web_calc
+    restart: always
+    ports:
+      - 80:80
+    
